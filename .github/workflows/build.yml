@@ -109,8 +109,13 @@ jobs:
           if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
               text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
 
-          # 10) Ensure FAN_SOFT_PWM is enabled
-          if "FAN_SOFT_PWM" not in text:
+                    # 10) Ensure FAN_SOFT_PWM is enabled (force uncomment/add)
+          fan_pat = re.compile(r'^\s*//?\s*#\s*define\s+FAN_SOFT_PWM', re.MULTILINE)
+          if fan_pat.search(text):
+              # If it exists (commented or not), replace it with active version
+              text = fan_pat.sub('#define FAN_SOFT_PWM', text)
+          else:
+              # If it doesn't exist at all, add it
               text += "\n#define FAN_SOFT_PWM\n"
 
           # 11) Ensure SERIAL_PORT is set to a valid number 1..9 (set to 1 if missing/invalid)
