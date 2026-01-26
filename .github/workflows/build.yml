@@ -129,6 +129,49 @@ jobs:
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
           PY
 
+      - name: Apply patches to Marlin/Configuration_adv.h (inline Python)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          cfg_adv_path = Path("marlin/Marlin/Configuration_adv.h")
+          if not cfg_adv_path.exists():
+              print("ERROR: marlin/Marlin/Configuration_adv.h not found")
+              sys.exit(1)
+
+          text = cfg_adv_path.read_text(encoding="utf-8")
+
+          def ensure_define(t, name, value=None):
+              pat = re.compile(r'^\s*(//\s*)?#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+              if value is None:
+                  # Just enable the define (no value)
+                  if pat.search(t):
+                      # Replace any existing (commented or not) with active version
+                      t = pat.sub(f'#define {name}', t)
+                  else:
+                      t = t + f"\n#define {name}\n"
+              else:
+                  # Enable with a specific value
+                  if pat.search(t):
+                      t = pat.sub(f'#define {name} {value}', t)
+                  else:
+                      t = t + f"\n#define {name} {value}\n"
+              return t
+
+          # 1) Restore leveling after G28 (auto-restore saved mesh)
+          text = ensure_define(text, 'RESTORE_LEVELING_AFTER_G28')
+
+          # 2) Enable leveling fade height for smoother transitions
+          text = ensure_define(text, 'ENABLE_LEVELING_FADE_HEIGHT')
+
+          # 3) BLTouch delay for CR-Touch stability
+          text = ensure_define(text, 'BLTOUCH_DELAY', '500')
+
+          cfg_adv_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration_adv.h with user settings.')
+          PY
+
       - name: Build Marlin with PlatformIO
         working-directory: ./marlin
         run: |
