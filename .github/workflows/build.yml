@@ -1,4 +1,4 @@
-# Safer, beginner-friendly GitHub Actions workflow to patch Marlin/Configuration.h and build
+name: Build Marlin (safe patch)
 on:
   workflow_dispatch:
 
@@ -29,73 +29,73 @@ jobs:
       - name: Apply safe patches to Marlin/Configuration.h
         run: |
           cat > ./apply_patches.py << 'PY'
-import re
-from pathlib import Path
+          import re
+          from pathlib import Path
 
-marlin_cfg = Path("marlin/Marlin/Configuration.h")
-if not marlin_cfg.exists():
-    print("ERROR: marlin/Marlin/Configuration.h not found")
-    raise SystemExit(1)
+          marlin_cfg = Path("marlin/Marlin/Configuration.h")
+          if not marlin_cfg.exists():
+              print("ERROR: marlin/Marlin/Configuration.h not found")
+              raise SystemExit(1)
 
-text = marlin_cfg.read_text(encoding="utf-8")
+          text = marlin_cfg.read_text(encoding="utf-8")
 
-def ensure_define(name, value=None):
-    global text
-    pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
-    if value is None:
-        if not pat.search(text):
-            text = text + f"\n#define {name}\n"
-    else:
-        if pat.search(text):
-            text = pat.sub(f'#define {name} {value}', text)
-        else:
-            text = text + f"\n#define {name} {value}\n"
+          def ensure_define(name, value=None):
+              global text
+              pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+              if value is None:
+                  if not pat.search(text):
+                      text = text + f"\n#define {name}\n"
+              else:
+                  if pat.search(text):
+                      text = pat.sub(f'#define {name} {value}', text)
+                  else:
+                      text = text + f"\n#define {name} {value}\n"
 
-# 1) Set MOTHERBOARD
-ensure_define("MOTHERBOARD", "BOARD_CREALITY_V422")
+          # 1) Set MOTHERBOARD
+          ensure_define("MOTHERBOARD", "BOARD_CREALITY_V422")
 
-# 2) Set DEFAULT_AXIS_STEPS_PER_UNIT (X Y Z E)
-pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
-steps_value = "{ 80, 80, 400, 424.9 }"
-if pat_steps.search(text):
-    text = pat_steps.sub(f'#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}', text)
-else:
-    text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
+          # 2) Set DEFAULT_AXIS_STEPS_PER_UNIT (X Y Z E)
+          pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
+          steps_value = "{ 80, 80, 400, 424.9 }"
+          if pat_steps.search(text):
+              text = pat_steps.sub(f'#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}', text)
+          else:
+              text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
 
-# 3) Enable 12864 knob controller if not present
-if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
-    text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
+          # 3) Enable 12864 knob controller if not present
+          if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
+              text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
 
-# 4) Enable BLTouch and Z_SAFE_HOMING
-if "BLTOUCH" not in text:
-    text += "\n#define BLTOUCH\n"
-if "Z_SAFE_HOMING" not in text:
-    text += "\n#define Z_SAFE_HOMING\n"
+          # 4) Enable BLTouch and Z_SAFE_HOMING
+          if "BLTOUCH" not in text:
+              text += "\n#define BLTOUCH\n"
+          if "Z_SAFE_HOMING" not in text:
+              text += "\n#define Z_SAFE_HOMING\n"
 
-# 5) Enable AUTO_BED_LEVELING_BILINEAR and set grid
-if "AUTO_BED_LEVELING_BILINEAR" not in text:
-    text += "\n#define AUTO_BED_LEVELING_BILINEAR\n"
-if "GRID_MAX_POINTS_X" not in text:
-    text += "\n#define GRID_MAX_POINTS_X 3\n"
+          # 5) Enable AUTO_BED_LEVELING_BILINEAR and set grid
+          if "AUTO_BED_LEVELING_BILINEAR" not in text:
+              text += "\n#define AUTO_BED_LEVELING_BILINEAR\n"
+          if "GRID_MAX_POINTS_X" not in text:
+              text += "\n#define GRID_MAX_POINTS_X 3\n"
 
-# 6) MIN_PROBE_EDGE
-if "MIN_PROBE_EDGE" not in text:
-    text += "\n#define MIN_PROBE_EDGE 10\n"
+          # 6) MIN_PROBE_EDGE
+          if "MIN_PROBE_EDGE" not in text:
+              text += "\n#define MIN_PROBE_EDGE 10\n"
 
-# 7) Probe offset placeholder
-if "NOZZLE_TO_PROBE_OFFSET" not in text:
-    text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
+          # 7) Probe offset placeholder
+          if "NOZZLE_TO_PROBE_OFFSET" not in text:
+              text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
 
-# 8) EEPROM support
-ensure_define("EEPROM_SETTINGS")
+          # 8) EEPROM support
+          ensure_define("EEPROM_SETTINGS")
 
-# 9) Default filament dia if not set
-if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
-    text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
+          # 9) Default filament dia if not set
+          if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
+              text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
 
-marlin_cfg.write_text(text, encoding="utf-8")
-print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
-PY
+          marlin_cfg.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
+          PY
           python3 ./apply_patches.py
           echo "---- Preview (first 200 lines) of patched Configuration.h ----"
           head -n 200 marlin/Marlin/Configuration.h || true
