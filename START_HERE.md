@@ -23,6 +23,13 @@
 3. **[README.md](README.md)** - Quick reference guide
 4. **[WHAT_WAS_FIXED.md](WHAT_WAS_FIXED.md)** - Technical details about the fix
 
+### 🔴 **Having problems?**
+
+5. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** ⬅️ **Blue screen still happening? Read this!**
+   - Common issues and solutions
+   - SD card troubleshooting
+   - Step-by-step problem solving
+
 ---
 
 ## 🎯 The Fastest Path to Success
@@ -57,6 +64,8 @@ The firmware will now work correctly (no more blue screen!).
 ---
 
 ## 🆘 Need Help?
+
+**Still getting a blue screen?** Check **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** first - it covers the most common issues.
 
 Create an "Issue" in this GitHub repository and describe what's happening. I'll help you!
 
