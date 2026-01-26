@@ -1,4 +1,4 @@
-# Safe cloud build: patch a few settings in Marlin/Marlin/Configuration.h and build firmware
+name: Build Marlin (robust patch)
 on:
   workflow_dispatch:
 
@@ -26,107 +26,103 @@ jobs:
           git fetch --tags
           git checkout "${{ env.MARLIN_VERSION }}"
 
-      - name: Apply safe patches to Marlin/Configuration.h
+      - name: Apply safe patches to Marlin/Configuration.h (inline Python)
         run: |
-          cat > ./apply_patches.py << 'PY'
-import re
-import sys
-from pathlib import Path
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
 
-cfg_path = Path("marlin/Marlin/Configuration.h")
-if not cfg_path.exists():
-    print("ERROR: marlin/Marlin/Configuration.h not found")
-    sys.exit(1)
+          cfg_path = Path("marlin/Marlin/Configuration.h")
+          if not cfg_path.exists():
+              print("ERROR: marlin/Marlin/Configuration.h not found")
+              sys.exit(1)
 
-text = cfg_path.read_text(encoding="utf-8")
+          text = cfg_path.read_text(encoding="utf-8")
 
-def replace_min_probe_with_probing_margin(t):
-    m = re.search(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+([0-9]+)', t, re.MULTILINE)
-    if m:
-        val = m.group(1)
-        t = re.sub(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+[0-9]+', f'#define PROBING_MARGIN {val}', t, flags=re.MULTILINE)
-    elif 'PROBING_MARGIN' not in t:
-        t = t + "\n#define PROBING_MARGIN 10\n"
-    return t
+          def replace_min_probe_with_probing_margin(t):
+              m = re.search(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+([0-9]+)', t, re.MULTILINE)
+              if m:
+                  val = m.group(1)
+                  t = re.sub(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+[0-9]+', f'#define PROBING_MARGIN {val}', t, flags=re.MULTILINE)
+              elif 'PROBING_MARGIN' not in t:
+                  t = t + "\n#define PROBING_MARGIN 10\n"
+              return t
 
-def ensure_define(t, name, value=None):
-    pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
-    if value is None:
-        if not pat.search(t):
-            t = t + f"\n#define {name}\n"
-    else:
-        if pat.search(t):
-            t = pat.sub(f'#define {name} {value}', t)
-        else:
-            t = t + f"\n#define {name} {value}\n"
-    return t
+          def ensure_define(t, name, value=None):
+              pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+              if value is None:
+                  if not pat.search(t):
+                      t = t + f"\n#define {name}\n"
+              else:
+                  if pat.search(t):
+                      t = pat.sub(f'#define {name} {value}', t)
+                  else:
+                      t = t + f"\n#define {name} {value}\n"
+              return t
 
-# 0) Replace MIN_PROBE_EDGE with PROBING_MARGIN if needed
-text = replace_min_probe_with_probing_margin(text)
+          # 0) Replace MIN_PROBE_EDGE with PROBING_MARGIN if needed
+          text = replace_min_probe_with_probing_margin(text)
 
-# 1) MOTHERBOARD -> Creality V4.2.2
-if re.search(r'^\s*#\s*define\s+MOTHERBOARD\s+.*', text, re.MULTILINE):
-    text = re.sub(r'^\s*#\s*define\s+MOTHERBOARD\s+.*', '#define MOTHERBOARD BOARD_CREALITY_V422', text, flags=re.MULTILINE)
-else:
-    text += "\n#define MOTHERBOARD BOARD_CREALITY_V422\n"
+          # 1) Ensure MOTHERBOARD is Creality V4.2.2
+          if re.search(r'^\s*#\s*define\s+MOTHERBOARD\s+.*', text, re.MULTILINE):
+              text = re.sub(r'^\s*#\s*define\s+MOTHERBOARD\s+.*', '#define MOTHERBOARD BOARD_CREALITY_V422', text, flags=re.MULTILINE)
+          else:
+              text += "\n#define MOTHERBOARD BOARD_CREALITY_V422\n"
 
-# 2) DEFAULT_AXIS_STEPS_PER_UNIT (X, Y, Z, E)
-pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
-steps_value = "{ 80, 80, 400, 424.9 }"
-if pat_steps.search(text):
-    text = pat_steps.sub(f'#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}', text)
-else:
-    text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
+          # 2) DEFAULT_AXIS_STEPS_PER_UNIT (X Y Z E)
+          pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
+          steps_value = "{ 80, 80, 400, 424.9 }"
+          if pat_steps.search(text):
+              text = pat_steps.sub(f'#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}', text)
+          else:
+              text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
 
-# 3) LCD controller: ensure knob 12864 macro exists
-if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
-    text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
+          # 3) Ensure knob 12864 controller macro exists
+          if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
+              text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
 
-# 4) Ensure BLTOUCH and Z_SAFE_HOMING
-if "BLTOUCH" not in text:
-    text += "\n#define BLTOUCH\n"
-if "Z_SAFE_HOMING" not in text:
-    text += "\n#define Z_SAFE_HOMING\n"
+          # 4) Ensure BLTOUCH and Z_SAFE_HOMING
+          if "BLTOUCH" not in text:
+              text += "\n#define BLTOUCH\n"
+          if "Z_SAFE_HOMING" not in text:
+              text += "\n#define Z_SAFE_HOMING\n"
 
-# 5) Enable AUTO_BED_LEVELING_BILINEAR and grid
-if "AUTO_BED_LEVELING_BILINEAR" not in text:
-    text += "\n#define AUTO_BED_LEVELING_BILINEAR\n"
-if "GRID_MAX_POINTS_X" not in text:
-    text += "\n#define GRID_MAX_POINTS_X 3\n"
+          # 5) Enable AUTO_BED_LEVELING_BILINEAR and grid
+          if "AUTO_BED_LEVELING_BILINEAR" not in text:
+              text += "\n#define AUTO_BED_LEVELING_BILINEAR\n"
+          if "GRID_MAX_POINTS_X" not in text:
+              text += "\n#define GRID_MAX_POINTS_X 3\n"
 
-# 6) Ensure PROBING_MARGIN exists
-if "PROBING_MARGIN" not in text:
-    text += "\n#define PROBING_MARGIN 10\n"
+          # 6) Ensure PROBING_MARGIN exists
+          if "PROBING_MARGIN" not in text:
+              text += "\n#define PROBING_MARGIN 10\n"
 
-# 7) Probe offset placeholder if missing
-if "NOZZLE_TO_PROBE_OFFSET" not in text:
-    text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
+          # 7) Probe offset placeholder if missing
+          if "NOZZLE_TO_PROBE_OFFSET" not in text:
+              text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
 
-# 8) EEPROM
-if "EEPROM_SETTINGS" not in text:
-    text += "\n#define EEPROM_SETTINGS\n"
+          # 8) EEPROM
+          if "EEPROM_SETTINGS" not in text:
+              text += "\n#define EEPROM_SETTINGS\n"
 
-# 9) Default filament diameter
-if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
-    text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
+          # 9) Default filament diameter
+          if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
+              text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
 
-# 10) Ensure FAN_SOFT_PWM is enabled
-if "FAN_SOFT_PWM" not in text:
-    text += "\n#define FAN_SOFT_PWM\n"
+          # 10) Ensure FAN_SOFT_PWM is enabled
+          if "FAN_SOFT_PWM" not in text:
+              text += "\n#define FAN_SOFT_PWM\n"
 
-# 11) Ensure SERIAL_PORT is set to a valid number 1..9 (set to 1 if missing/invalid)
-ser_match = re.search(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', text, re.MULTILINE)
-if ser_match:
-    text = re.sub(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', '#define SERIAL_PORT 1', text, flags=re.MULTILINE)
-else:
-    text += "\n#define SERIAL_PORT 1\n"
+          # 11) Ensure SERIAL_PORT is set to a valid number 1..9 (set to 1 if missing/invalid)
+          ser_match = re.search(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', text, re.MULTILINE)
+          if ser_match:
+              text = re.sub(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', '#define SERIAL_PORT 1', text, flags=re.MULTILINE)
+          else:
+              text += "\n#define SERIAL_PORT 1\n"
 
-cfg_path.write_text(text, encoding="utf-8")
-print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
-PY
-          python3 ./apply_patches.py
-          echo "---- Preview (first 200 lines) of patched Configuration.h ----"
-          head -n 200 marlin/Marlin/Configuration.h || true
+          cfg_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
+          PY
 
       - name: Build Marlin with PlatformIO
         working-directory: ./marlin
