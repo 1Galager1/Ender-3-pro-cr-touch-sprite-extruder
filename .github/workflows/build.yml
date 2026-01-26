@@ -1,4 +1,4 @@
-name: Build Marlin (safe patch)
+# Build Marlin (safe patch) — updated to fix PROBING_MARGIN, FAN_SOFT_PWM, SERIAL_PORT issues
 on:
   workflow_dispatch:
 
@@ -32,15 +32,22 @@ jobs:
           import re
           from pathlib import Path
 
-          marlin_cfg = Path("marlin/Marlin/Configuration.h")
-          if not marlin_cfg.exists():
+          cfg_path = Path("marlin/Marlin/Configuration.h")
+          if not cfg_path.exists():
               print("ERROR: marlin/Marlin/Configuration.h not found")
               raise SystemExit(1)
 
-          text = marlin_cfg.read_text(encoding="utf-8")
+          text = cfg_path.read_text(encoding="utf-8")
+
+          def replace_define(name, value):
+              pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+              if pat.search(text):
+                  return pat.sub(f'#define {name} {value}', text)
+              else:
+                  return text + f"\n#define {name} {value}\n"
 
           def ensure_define(name, value=None):
-              global text
+              nonlocal text
               pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
               if value is None:
                   if not pat.search(text):
@@ -51,8 +58,19 @@ jobs:
                   else:
                       text = text + f"\n#define {name} {value}\n"
 
+          # 0) Convert MIN_PROBE_EDGE -> PROBING_MARGIN if present
+          m = re.search(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+([0-9]+)', text, re.MULTILINE)
+          if m:
+              val = m.group(1)
+              text = re.sub(r'^\s*#\s*define\s+MIN_PROBE_EDGE\s+[0-9]+', f'#define PROBING_MARGIN {val}', text, flags=re.MULTILINE)
+          elif 'PROBING_MARGIN' not in text:
+              text += "\n#define PROBING_MARGIN 10\n"
+
           # 1) Set MOTHERBOARD
-          ensure_define("MOTHERBOARD", "BOARD_CREALITY_V422")
+          if 'MOTHERBOARD' in text:
+              text = re.sub(r'^\s*#\s*define\s+MOTHERBOARD\s+.*', '#define MOTHERBOARD BOARD_CREALITY_V422', text, flags=re.MULTILINE)
+          else:
+              text += "\n#define MOTHERBOARD BOARD_CREALITY_V422\n"
 
           # 2) Set DEFAULT_AXIS_STEPS_PER_UNIT (X Y Z E)
           pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
@@ -62,7 +80,7 @@ jobs:
           else:
               text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
 
-          # 3) Enable 12864 knob controller if not present
+          # 3) Ensure 12864 knob controller defined
           if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
               text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
 
@@ -78,22 +96,35 @@ jobs:
           if "GRID_MAX_POINTS_X" not in text:
               text += "\n#define GRID_MAX_POINTS_X 3\n"
 
-          # 6) MIN_PROBE_EDGE
-          if "MIN_PROBE_EDGE" not in text:
-              text += "\n#define MIN_PROBE_EDGE 10\n"
+          # 6) PROBING_MARGIN already handled above if MIN_PROBE_EDGE existed
+          if "PROBING_MARGIN" not in text:
+              text += "\n#define PROBING_MARGIN 10\n"
 
-          # 7) Probe offset placeholder
+          # 7) Probe offset placeholder (if not present)
           if "NOZZLE_TO_PROBE_OFFSET" not in text:
               text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
 
           # 8) EEPROM support
-          ensure_define("EEPROM_SETTINGS")
+          if "EEPROM_SETTINGS" not in text:
+              text += "\n#define EEPROM_SETTINGS\n"
 
           # 9) Default filament dia if not set
           if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
               text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
 
-          marlin_cfg.write_text(text, encoding="utf-8")
+          # 10) Ensure FAN_SOFT_PWM is enabled (some Creality configs require it)
+          if "FAN_SOFT_PWM" not in text:
+              text += "\n#define FAN_SOFT_PWM\n"
+
+          # 11) Ensure SERIAL_PORT is set to a number 1..9 (set to 1 if missing/invalid)
+          ser_pat = re.compile(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', re.MULTILINE)
+          if ser_pat.search(text):
+              text = ser_pat.sub('#define SERIAL_PORT 1', text)
+          else:
+              text += "\n#define SERIAL_PORT 1\n"
+
+          # Write out changes
+          cfg_path.write_text(text, encoding="utf-8")
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
           PY
           python3 ./apply_patches.py
