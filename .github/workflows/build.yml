@@ -1,0 +1,70 @@
+# GitHub Actions workflow: Build Marlin with your config for Creality v4.2.2 (STM32F103)
+# This file is pre-filled for a beginner-friendly turnkey flow.
+# MARLIN_VERSION and BUILD_ENV are already set to recommended values for an STM32F103 Creality V4.2.2 board.
+#
+# If you want a different Marlin version, tell me and I will change MARLIN_VERSION.
+
+on:
+  workflow_dispatch:
+
+env:
+  MARLIN_VERSION: "bugfix-2.1.x"          # chosen Marlin branch (recent, stable 2.x bugfix branch)
+  BUILD_ENV: "STM32F103RE_creality"      # PlatformIO env for STM32F103 Creality boards
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repo (your config files)
+        uses: actions/checkout@v4
+
+      - name: Validate inputs
+        run: |
+          echo "MARLIN_VERSION=${{ env.MARLIN_VERSION }}"
+          echo "BUILD_ENV=${{ env.BUILD_ENV }}"
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip git
+          pip3 install -U platformio
+
+      - name: Clone Marlin at specified tag/branch
+        run: |
+          git clone https://github.com/MarlinFirmware/Marlin.git marlin
+          cd marlin
+          git fetch --tags
+          git checkout "${{ env.MARLIN_VERSION }}"
+
+      - name: Copy user Configuration files into Marlin
+        run: |
+          if [ -f ./Configuration.h ]; then
+            cp ./Configuration.h ./marlin/Marlin/Configuration.h
+          fi
+          if [ -f ./Configuration_adv.h ]; then
+            cp ./Configuration_adv.h ./marlin/Marlin/Configuration_adv.h
+          fi
+          echo "Copied local Configuration files into Marlin."
+
+      - name: Build Marlin with PlatformIO
+        working-directory: ./marlin
+        run: |
+          platformio run -e "${{ env.BUILD_ENV }}"
+        env:
+          PIO_HOME_DIR: ${{ runner.temp }}/.platformio
+
+      - name: Upload firmware artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-bin
+          path: |
+            ./marlin/.pio/build/${{ env.BUILD_ENV }}/firmware.bin
+            ./marlin/.pio/build/${{ env.BUILD_ENV }}/firmware.hex
+            ./marlin/.pio/build/${{ env.BUILD_ENV }}/firmware.uf2
+            ./marlin/.pio/build/${{ env.BUILD_ENV }}/*.bin
+            ./marlin/.pio/build/${{ env.BUILD_ENV }}/*.hex
+
+      - name: Success message
+        if: success()
+        run: echo "Build finished. Download firmware from Actions -> build -> Artifacts -> firmware-bin."
