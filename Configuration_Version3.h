@@ -49,6 +49,7 @@
 
 // ----------------- FILAMENT / EXTRUDER -----------------
 #define DEFAULT_NOMINAL_FILAMENT_DIA 1.75  // mm
+#define FAN_SOFT_PWM           // Required for STM32 boards
 
 // ----------------- FINAL NOTES -----------------
 // Keep advanced features disabled for a beginner build. We can add extras later if you want.
