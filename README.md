@@ -15,7 +15,9 @@ This is an automatic firmware builder for the **Ender 3 Pro** 3D printer with:
 ### 1️⃣ Build the Firmware
 1. Click the "**Actions**" tab at the top of this page
 2. Click "**Build Marlin (robust patch)**" on the left
-3. Click the "**Run workflow**" button, then click the green "**Run workflow**" again
+3. Click the "**Run workflow**" button
+   - ⚠️ **CRITICAL**: Select branch **"copilot/fix-firmware-issue-ender-3-pro"** from dropdown
+   - Then click the green "**Run workflow**" button
 4. Wait 2-3 minutes for the green checkmark ✓
 
 ### 2️⃣ Download the Firmware

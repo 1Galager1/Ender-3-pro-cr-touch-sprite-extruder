@@ -18,6 +18,8 @@ I fixed the automatic builder so it now sets up ALL the settings your printer ne
 1. **Go to the "Actions" tab** at the top of this GitHub page
 2. **Click "Build Marlin"** on the left side
 3. **Click "Run workflow"** (green button)
+   - ⚠️ **IMPORTANT**: Select branch **"copilot/fix-firmware-issue-ender-3-pro"** from the dropdown
+   - Do NOT use "main" - that doesn't have the fix yet!
 4. **Wait 2-3 minutes** for it to finish
 5. **Download the firmware** (click the completed build, scroll down, click "firmware-bin")
 6. **Follow the flashing instructions** in the HOW_TO_BUILD_AND_FLASH.md file

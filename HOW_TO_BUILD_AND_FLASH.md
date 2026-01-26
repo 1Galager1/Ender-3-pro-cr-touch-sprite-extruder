@@ -11,6 +11,8 @@ This repository will automatically build firmware (the software that runs your p
 
 ## Step 1: Build the Firmware
 
+⚠️ **CRITICAL**: Make sure you build from the correct branch with the fixes!
+
 1. **Go to your repository on GitHub** (you're probably looking at it right now!)
 
 2. **Click on the "Actions" tab** at the top of the page
@@ -20,6 +22,8 @@ This repository will automatically build firmware (the software that runs your p
 
 4. **Click the "Run workflow" button** on the right side
    - A dropdown will appear
+   - **IMPORTANT**: In the dropdown, select the branch **"copilot/fix-firmware-issue-ender-3-pro"**
+     - DO NOT use "main" - that's the old version without the blue screen fix!
    - Click the green "Run workflow" button in the dropdown
 
 5. **Wait for the build to complete** (about 2-3 minutes)
