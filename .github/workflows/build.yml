@@ -1,15 +1,13 @@
-# GitHub Actions workflow: Build Marlin with your config for Creality v4.2.2 (STM32F103)
-# This file is pre-filled for a beginner-friendly turnkey flow.
-# MARLIN_VERSION and BUILD_ENV are already set to recommended values for an STM32F103 Creality V4.2.2 board.
-#
-# If you want a different Marlin version, tell me and I will change MARLIN_VERSION.
+# GitHub Actions workflow (safer, beginner-friendly)
+# This workflow fetches Marlin, patches only the needed settings in Marlin/Marlin/Configuration.h,
+# and then builds the chosen PlatformIO environment. No need to supply a full Configuration.h file.
 
 on:
   workflow_dispatch:
 
 env:
-  MARLIN_VERSION: "bugfix-2.1.x"          # chosen Marlin branch (recent, stable 2.x bugfix branch)
-  BUILD_ENV: "STM32F103RE_creality"      # PlatformIO env for STM32F103 Creality boards
+  MARLIN_VERSION: "bugfix-2.1.x"          # Marlin branch to build (can be changed if desired)
+  BUILD_ENV: "STM32F103RE_creality"      # PlatformIO env matching your Creality V4.2.2 STM32F103 board
 
 jobs:
   build:
@@ -17,11 +15,6 @@ jobs:
     steps:
       - name: Checkout this repo (your config files)
         uses: actions/checkout@v4
-
-      - name: Validate inputs
-        run: |
-          echo "MARLIN_VERSION=${{ env.MARLIN_VERSION }}"
-          echo "BUILD_ENV=${{ env.BUILD_ENV }}"
 
       - name: Install dependencies
         run: |
@@ -36,15 +29,88 @@ jobs:
           git fetch --tags
           git checkout "${{ env.MARLIN_VERSION }}"
 
-      - name: Copy user Configuration files into Marlin
+      - name: Apply safe patches to Marlin/Configuration.h
         run: |
-          if [ -f ./Configuration.h ]; then
-            cp ./Configuration.h ./marlin/Marlin/Configuration.h
-          fi
-          if [ -f ./Configuration_adv.h ]; then
-            cp ./Configuration_adv.h ./marlin/Marlin/Configuration_adv.h
-          fi
-          echo "Copied local Configuration files into Marlin."
+          # create a small Python script to apply a few safe substitutions
+          cat > ./apply_patches.py <<'PY'
+import re
+from pathlib import Path
+
+marlin_cfg = Path("marlin/Marlin/Configuration.h")
+text = marlin_cfg.read_text(encoding="utf-8")
+
+def ensure_define(name, value=None):
+    global text
+    pat = re.compile(r'^\s*#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+    if value is None:
+        if not pat.search(text):
+            text = text + f"\n#define {name}\n"
+    else:
+        # Replace existing define or add a new one
+        if pat.search(text):
+            text = pat.sub(f'#define {name} {value}', text)
+        else:
+            text = text + f"\n#define {name} {value}\n"
+
+# 1) Set MOTHERBOARD
+ensure_define("MOTHERBOARD", "BOARD_CREALITY_V422")
+
+# 2) Set DEFAULT_AXIS_STEPS_PER_UNIT (X Y Z E)
+pat_steps = re.compile(r'^\s*#\s*define\s+DEFAULT_AXIS_STEPS_PER_UNIT\s+{[^}]+}', re.MULTILINE)
+steps_value = "{ 80, 80, 400, 424.9 }"
+if pat_steps.search(text):
+    text = pat_steps.sub(f'#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}', text)
+else:
+    text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
+
+# 3) Ensure REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER (knob 12864)
+pat_lcd = re.compile(r'REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER')
+if not pat_lcd.search(text):
+    # Try to add under LCD / Controller section marker if it exists, else append
+    marker = "/* LCD / Controller */"
+    if marker in text:
+        text = text.replace(marker, marker + "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER")
+    else:
+        text = text + "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
+
+# 4) Enable BLTOUCH and Z_SAFE_HOMING
+if "BLTOUCH" not in text:
+    text += "\n#define BLTOUCH\n"
+if "Z_SAFE_HOMING" not in text:
+    text += "\n#define Z_SAFE_HOMING\n"
+
+# 5) Enable AUTO_BED_LEVELING_BILINEAR and GRID_MAX_POINTS_X=3
+if "AUTO_BED_LEVELING_BILINEAR" not in text:
+    text += "\n#define AUTO_BED_LEVELING_BILINEAR\n"
+if "GRID_MAX_POINTS_X" not in text:
+    text += "\n#define GRID_MAX_POINTS_X 3\n"
+
+# 6) MIN_PROBE_EDGE
+if "MIN_PROBE_EDGE" not in text:
+    text += "\n#define MIN_PROBE_EDGE 10\n"
+
+# 7) Probe offset placeholder
+pat_offset = re.compile(r'NOZZLE_TO_PROBE_OFFSET')
+if not pat_offset.search(text):
+    text += "\n#define NOZZLE_TO_PROBE_OFFSET { -44, -9, 0 } // PLACEHOLDER - measure and update\n"
+
+# 8) EEPROM support
+ensure_define("EEPROM_SETTINGS")
+
+# 9) Default filament dia
+pat_fil = re.compile(r'DEFAULT_NOMINAL_FILAMENT_DIA')
+if not pat_fil.search(text):
+    text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
+
+# Write back
+marlin_cfg.write_text(text, encoding="utf-8")
+print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
+PY
+          # run the patching script
+          python3 ./apply_patches.py
+          # show a short preview to help debug
+          echo "---- Preview (first 200 lines) of patched Configuration.h ----"
+          head -n 200 marlin/Marlin/Configuration.h || true
 
       - name: Build Marlin with PlatformIO
         working-directory: ./marlin
