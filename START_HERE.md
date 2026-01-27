@@ -8,26 +8,32 @@
 
 ### 🟢 **Start with these files:**
 
-1. **[SIMPLE_SUMMARY.md](SIMPLE_SUMMARY.md)** ⬅️ **Read this first!**
+1. **[VISUAL_GUIDE_RUN_WORKFLOW.md](VISUAL_GUIDE_RUN_WORKFLOW.md)** ⬅️ **Can't find "Run workflow" button? Start here!**
+   - Step-by-step guide to navigate GitHub Actions
+   - Where to click and what to look for
+   - Direct links to the right pages
+
+2. **[SIMPLE_SUMMARY.md](SIMPLE_SUMMARY.md)** ⬅️ **Read this for overview!**
    - Explains the problem in simple terms
    - Tells you exactly what to do
    - No technical jargon
 
-2. **[HOW_TO_BUILD_AND_FLASH.md](HOW_TO_BUILD_AND_FLASH.md)** ⬅️ **Step-by-step instructions**
+3. **[HOW_TO_BUILD_AND_FLASH.md](HOW_TO_BUILD_AND_FLASH.md)** ⬅️ **Step-by-step instructions**
    - Detailed guide with screenshots-style descriptions
    - What to click and when
    - Troubleshooting tips
 
 ### 🟡 **Optional reading:**
 
-3. **[README.md](README.md)** - Quick reference guide
-4. **[WHAT_WAS_FIXED.md](WHAT_WAS_FIXED.md)** - Technical details about the fix
+4. **[README.md](README.md)** - Quick reference guide
+5. **[WHAT_WAS_FIXED.md](WHAT_WAS_FIXED.md)** - Technical details about the fix
 
 ### 🔴 **Having problems?**
 
-5. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** ⬅️ **Blue screen still happening? Read this!**
+6. **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** ⬅️ **Blue screen still happening? Read this!**
    - Common issues and solutions
    - SD card troubleshooting
+   - Step-by-step problem solving
    - Step-by-step problem solving
 
 ---
