@@ -24,9 +24,15 @@ Step-by-step: Create the GitHub repo and run the cloud build (easiest)
    - Configuration.h (from this package) — put at the repo root
    - Configuration_adv.h (from this package) — put at the repo root
    - Create the folder `.github/workflows/` and add `build.yml` (file below) into it
-4. After pushing the files to GitHub, open your repo page → Actions tab.
-5. You will see the "Build Marlin" workflow (or similar). Click "Run workflow" (if necessary).
-6. Wait for the workflow to complete (it runs PlatformIO and builds Marlin). When it completes, open the Actions run and download the artifact named `firmware-bin`. Inside it you will find `firmware.bin` (or .hex/.uf2, but for Creality SD flashing, firmware.bin is used).
+4. After pushing the files to GitHub, **run the workflow by following these exact steps**:
+   - Open your repository on GitHub
+   - Click the **"Actions"** tab at the top of the page (between "Pull requests" and "Projects")
+   - In the left sidebar, click on **"Build Marlin (robust patch)"** (the workflow name)
+   - On the right side, you'll see a **green "Run workflow"** button — click it
+   - A dropdown will appear — click the **green "Run workflow"** button in the dropdown
+   - The workflow will start running (you'll see a yellow/orange dot)
+5. Wait for the workflow to complete (it runs PlatformIO and builds Marlin). When it completes (green checkmark), click on the workflow run name.
+6. Scroll down to the **"Artifacts"** section and download the artifact named **"firmware-bin"**. Inside the downloaded zip file you will find `firmware.bin` (or .hex/.uf2, but for Creality SD flashing, firmware.bin is used).
 
 Flash the firmware to your printer (SD-card method)
 1. Copy the downloaded `firmware.bin` to the root of a FAT32 microSD card (filename: firmware.bin, lowercase).
