@@ -44,7 +44,8 @@ After the first boot, you MUST reset the EEPROM:
 
 **Using the LCD menu:**
 - Go to: Configuration → Initialize EEPROM → Confirm
-- Go to: Configuration → Store Settings
+- The screen may briefly go blank or the printer may restart - this is normal
+- After restart: Configuration → Store Settings
 
 **Or via USB terminal:**
 ```gcode
@@ -89,20 +90,28 @@ M500        ; Save mesh to EEPROM
 ```gcode
 G28         ; Home
 G1 Z0       ; Move to Z=0
-; Use paper method to find proper Z height
-M851 Z-X.XX ; Set Z offset (e.g., M851 Z-1.85)
+; Paper method: Slide a piece of paper between nozzle and bed
+; Adjust Z until you feel slight resistance when moving the paper
+; If nozzle is too high, use negative offset (e.g., -1.85)
+; If nozzle is too low, use less negative or positive offset
+M851 Z-1.85 ; Set Z offset (adjust this value based on your paper test)
 M500        ; Save
 ```
 
 ### 3. (Optional) Calibrate E-steps:
+**WARNING: Heat the hotend to normal printing temperature (200-210°C) before extruding!**  
 The firmware uses **424.9 steps/mm** (Sprite factory default).  
 To calibrate it yourself:
 ```gcode
-M302 S0     ; Allow cold extrusion (for testing)
+M104 S200   ; Heat hotend to 200°C (adjust for your filament)
+M109 S200   ; Wait for temperature
+; Mark filament 120mm above the extruder entry point
 G92 E0      ; Reset extruder position
 G1 E100 F100 ; Extrude 100mm
-; Measure actual extrusion, adjust with:
-M92 E424.9  ; Set new E-steps value
+; Measure how much filament was actually used and adjust:
+; New E-steps = Old E-steps * (100 / actual_extruded_mm)
+; Example: If only 98mm extruded: 424.9 * (100/98) = 433.6
+M92 E424.9  ; Set new E-steps value (replace with your calculated value)
 M500        ; Save
 ```
 

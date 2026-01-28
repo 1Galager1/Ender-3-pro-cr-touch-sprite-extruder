@@ -6,15 +6,12 @@
 #ifndef CONFIGURATION_ADV_H
 #define CONFIGURATION_ADV_H
 
-// ========== SERIAL COMMUNICATION ==========
-// Set baudrate for serial communication (115200 is standard for Creality boards)
-#define BAUDRATE 115200
-
 // ========== DISPLAY & UI SETTINGS ==========
 // Boot screen timeout (ms) - helps ensure display initializes properly
 #define BOOTSCREEN_TIMEOUT 3000
 
-// Encoder settings for knob-based displays
+// Encoder settings for knob-based displays (12864 LCD with rotary encoder)
+// These values are standard for REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 #define ENCODER_PULSES_PER_STEP 4
 #define ENCODER_STEPS_PER_MENU_ITEM 1
 
@@ -44,12 +41,9 @@
 // Allow EEPROM auto-init on first boot (helps prevent corruption issues)
 #define EEPROM_AUTO_INIT
 
-// ========== SD CARD ==========
-// Enable SD card menu (standard for Creality boards)
-#define SDSUPPORT
-
 // ========== STARTUP CONFIGURATION ==========
-// Play a beep on startup to confirm boot
+// Play a beep on startup to confirm boot (requires buzzer/speaker hardware)
+// If your board doesn't have a buzzer, this command will be silently ignored
 #define STARTUP_COMMANDS "M300 S440 P200"
 
 // ========== SAFETY FEATURES ==========

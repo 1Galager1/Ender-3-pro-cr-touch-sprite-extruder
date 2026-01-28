@@ -46,6 +46,9 @@
 // ----------------- EEPROM -----------------
 #define EEPROM_SETTINGS        // Enable M500/M501 save/restore
 
+// ----------------- SD CARD -----------------
+#define SDSUPPORT              // Enable SD card support
+
 // ----------------- THERMISTOR -----------------
 // Stock Creality thermistor (NTC 100k) — keep Marlin defaults for a Creality thermistor in your chosen Marlin release.
 
