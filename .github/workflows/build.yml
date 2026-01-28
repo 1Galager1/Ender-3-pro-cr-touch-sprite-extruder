@@ -143,7 +143,7 @@ jobs:
           text = cfg_adv_path.read_text(encoding="utf-8")
 
           # Enable RESTORE_LEVELING_AFTER_G28 (restore mesh after G28)
-          restore_pat = re.compile(r'^\s*//?\s*#\s*define\s+RESTORE_LEVELING_AFTER_G28', re.MULTILINE)
+          restore_pat = re.compile(r'^\s*(//\s*)?#\s*define\s+RESTORE_LEVELING_AFTER_G28', re.MULTILINE)
           if restore_pat.search(text):
               # If it exists (commented or not), replace it with active version
               text = restore_pat.sub('#define RESTORE_LEVELING_AFTER_G28', text)
@@ -152,7 +152,7 @@ jobs:
               text += "\n#define RESTORE_LEVELING_AFTER_G28\n"
 
           # Enable ENABLE_LEVELING_FADE_HEIGHT for fade over first layers
-          fade_pat = re.compile(r'^\s*//?\s*#\s*define\s+ENABLE_LEVELING_FADE_HEIGHT', re.MULTILINE)
+          fade_pat = re.compile(r'^\s*(//\s*)?#\s*define\s+ENABLE_LEVELING_FADE_HEIGHT', re.MULTILINE)
           if fade_pat.search(text):
               # If it exists (commented or not), replace it with active version
               text = fade_pat.sub('#define ENABLE_LEVELING_FADE_HEIGHT', text)
@@ -160,8 +160,17 @@ jobs:
               # If it doesn't exist at all, add it
               text += "\n#define ENABLE_LEVELING_FADE_HEIGHT\n"
 
+          # Enable ENABLE_LEVELING_FADE_ONLY_ONCE (fade only once)
+          fade_once_pat = re.compile(r'^\s*(//\s*)?#\s*define\s+ENABLE_LEVELING_FADE_ONLY_ONCE', re.MULTILINE)
+          if fade_once_pat.search(text):
+              # If it exists (commented or not), replace it with active version
+              text = fade_once_pat.sub('#define ENABLE_LEVELING_FADE_ONLY_ONCE', text)
+          else:
+              # If it doesn't exist at all, add it
+              text += "\n#define ENABLE_LEVELING_FADE_ONLY_ONCE\n"
+
           # BLTouch delay settings
-          bltouch_delay_pat = re.compile(r'^\s*//?\s*#\s*define\s+BLTOUCH_DELAY\s+\d+', re.MULTILINE)
+          bltouch_delay_pat = re.compile(r'^\s*(//\s*)?#\s*define\s+BLTOUCH_DELAY(?:\s+\d+)?', re.MULTILINE)
           if bltouch_delay_pat.search(text):
               # If it exists (commented or not), replace it with active version
               text = bltouch_delay_pat.sub('#define BLTOUCH_DELAY 500', text)
@@ -170,7 +179,7 @@ jobs:
               text += "\n#define BLTOUCH_DELAY 500\n"
 
           cfg_adv_path.write_text(text, encoding="utf-8")
-          print('Patched marlin/Marlin/Configuration_adv.h with user settings.')
+          print('Patched marlin/Marlin/Configuration_adv.h with user settings (safe-mode).')
           PY
 
       - name: Build Marlin with PlatformIO
