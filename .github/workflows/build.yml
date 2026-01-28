@@ -129,6 +129,59 @@ jobs:
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
           PY
 
+      - name: Apply safe patches to Marlin/Configuration_adv.h (inline Python)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          cfg_adv_path = Path("marlin/Marlin/Configuration_adv.h")
+          if not cfg_adv_path.exists():
+              print("ERROR: marlin/Marlin/Configuration_adv.h not found")
+              sys.exit(1)
+
+          text = cfg_adv_path.read_text(encoding="utf-8")
+
+          # Ensure BAUDRATE is set to 115200
+          if re.search(r'^\s*#\s*define\s+BAUDRATE\s+', text, re.MULTILINE):
+              text = re.sub(r'^\s*#\s*define\s+BAUDRATE\s+\d+', '#define BAUDRATE 115200', text, flags=re.MULTILINE)
+          else:
+              text += "\n#define BAUDRATE 115200\n"
+
+          # Ensure BOOTSCREEN_TIMEOUT is set
+          if "BOOTSCREEN_TIMEOUT" not in text:
+              text += "\n#define BOOTSCREEN_TIMEOUT 3000\n"
+
+          # Ensure ENCODER settings for knob display
+          if "ENCODER_PULSES_PER_STEP" not in text:
+              text += "\n#define ENCODER_PULSES_PER_STEP 4\n"
+          if "ENCODER_STEPS_PER_MENU_ITEM" not in text:
+              text += "\n#define ENCODER_STEPS_PER_MENU_ITEM 1\n"
+
+          # Ensure RESTORE_LEVELING_AFTER_G28
+          if "RESTORE_LEVELING_AFTER_G28" not in text:
+              text += "\n#define RESTORE_LEVELING_AFTER_G28\n"
+
+          # Ensure BLTOUCH_DELAY is set
+          if "BLTOUCH_DELAY" not in text:
+              text += "\n#ifdef BLTOUCH\n  #define BLTOUCH_DELAY 500\n#endif\n"
+
+          # Ensure EEPROM_AUTO_INIT is enabled
+          if "EEPROM_AUTO_INIT" not in text:
+              text += "\n#define EEPROM_AUTO_INIT\n"
+
+          # Ensure SDSUPPORT is enabled
+          if "SDSUPPORT" not in text:
+              text += "\n#define SDSUPPORT\n"
+
+          # Add startup beep command
+          if "STARTUP_COMMANDS" not in text:
+              text += '\n#define STARTUP_COMMANDS "M300 S440 P200"\n'
+
+          cfg_adv_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration_adv.h with essential settings.')
+          PY
+
       - name: Build Marlin with PlatformIO
         working-directory: ./marlin
         run: |
