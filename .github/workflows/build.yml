@@ -129,6 +129,38 @@ jobs:
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
           PY
 
+      - name: Apply safe patches to Marlin/Configuration_adv.h (inline Python)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          cfg_adv_path = Path("marlin/Marlin/Configuration_adv.h")
+          if not cfg_adv_path.exists():
+              print("ERROR: marlin/Marlin/Configuration_adv.h not found")
+              sys.exit(1)
+
+          text = cfg_adv_path.read_text(encoding="utf-8")
+
+          # Enable RESTORE_LEVELING_AFTER_G28 (restore mesh after G28)
+          if "RESTORE_LEVELING_AFTER_G28" not in text:
+              text += "\n#define RESTORE_LEVELING_AFTER_G28\n"
+
+          # Enable ENABLE_LEVELING_FADE_HEIGHT for fade over first layers
+          if "ENABLE_LEVELING_FADE_HEIGHT" not in text:
+              text += "\n#define ENABLE_LEVELING_FADE_HEIGHT\n"
+
+          # BLTouch delay settings
+          bltouch_delay_pat = re.compile(r'^\s*//?\s*#\s*define\s+BLTOUCH_DELAY\s+\d+', re.MULTILINE)
+          if bltouch_delay_pat.search(text):
+              text = bltouch_delay_pat.sub('#define BLTOUCH_DELAY 500', text)
+          elif "BLTOUCH_DELAY" not in text:
+              text += "\n#define BLTOUCH_DELAY 500\n"
+
+          cfg_adv_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration_adv.h with user settings.')
+          PY
+
       - name: Build Marlin with PlatformIO
         working-directory: ./marlin
         run: |
