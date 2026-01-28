@@ -7,9 +7,9 @@
 // Restore the saved mesh automatically after G28 (so saved mesh is applied without needing M420 S1)
 #define RESTORE_LEVELING_AFTER_G28
 
-// Fade leveling over first layers (gentle fade to natural first layers)
-#define ENABLE_LEVELING_FADE_HEIGHT
-#define ENABLE_LEVELING_FADE_ONLY_ONCE
+// NOTE: ENABLE_LEVELING_FADE_HEIGHT has been removed as it requires additional patching
+// of Configuration_adv.h during the build process. Users can enable this manually via
+// M420 Z<height> command after flashing if fade height is desired.
 
 // BLTouch / CR-Touch sensible defaults
 #ifdef BLTOUCH
