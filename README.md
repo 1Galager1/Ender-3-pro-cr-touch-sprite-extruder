@@ -2,7 +2,11 @@
 
 ## 🚨 BLUE SCREEN? START HERE! 🚨
 
-If you're seeing a **blue screen** on your printer, read **[BLUE_SCREEN_FIX.md](BLUE_SCREEN_FIX.md)** first!
+### → **[QUICKSTART.md](QUICKSTART.md)** ← 3 STEPS TO FIX YOUR PRINTER
+
+**Or detailed troubleshooting:** [BLUE_SCREEN_FIX.md](BLUE_SCREEN_FIX.md)
+
+---
 
 ## Quick Start: Get Your Printer Working NOW
 
