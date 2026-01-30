@@ -50,9 +50,11 @@ Once merged, you can:
 
 ## What Was Wrong (In Simple Terms)
 
-Your 3D printer firmware configuration had a setting turned on that wasn't compatible with how the build system works. It's like trying to use a feature that requires extra parts you don't have installed.
+Your 3D printer firmware build was failing because a required setting was missing. The build system enables bed leveling (which helps your printer compensate for an uneven bed), but it was missing a companion setting called "ENABLE_LEVELING_FADE_HEIGHT".
 
-I removed that one setting (it was for "fade height" - a fancy feature for bed leveling). Your printer will still work perfectly without it! If you want that feature later, you can turn it on manually using a command after you've loaded the firmware.
+Think of it like this: You told your printer to use a fancy bed leveling feature, but forgot to install the software that makes it work. I added that missing piece, so now the build will complete successfully!
+
+The "fade height" feature gradually reduces the bed leveling compensation as the print gets higher, which can improve print quality.
 
 ## Need Help?
 
