@@ -11,7 +11,8 @@
 ### Method 1: Delete via GitHub Web Interface
 
 1. **Navigate to your repository**
-   - Go to https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder
+   - For this repository, go to: https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder
+   - Or for any repository: https://github.com/YOUR-USERNAME/YOUR-REPOSITORY-NAME
 
 2. **Access Repository Settings**
    - Click on the **Settings** tab (it's at the top-right of your repository page)
@@ -26,7 +27,8 @@
 
 5. **Confirm Deletion**
    - GitHub will ask you to confirm by typing the repository name
-   - Type: `1Galager1/Ender-3-pro-cr-touch-sprite-extruder`
+   - For this repository, type: `1Galager1/Ender-3-pro-cr-touch-sprite-extruder`
+   - For any repository, type: `YOUR-USERNAME/YOUR-REPOSITORY-NAME`
    - Click the final confirmation button
 
 6. **Repository Deleted**
