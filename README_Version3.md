@@ -1,3 +1,7 @@
+🆘 **GOT A BLUE SCREEN OR BOOT FAILURE?** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for immediate help! Your printer is almost certainly fine.
+
+---
+
 ```markdown
 # Ender 3 Pro V4.2.2 (STM32F103) — Turnkey cloud-build instructions
 
