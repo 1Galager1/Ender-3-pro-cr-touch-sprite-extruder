@@ -1,0 +1,5 @@
+# Working Firmware Files
+
+Place firmware bin files that successfully boot and work in this directory.
+
+Don't forget to add an info file (`.md` or `.txt`) for each bin file!
