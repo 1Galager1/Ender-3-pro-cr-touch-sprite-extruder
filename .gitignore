@@ -1,0 +1,29 @@
+# Marlin source clone (used during build)
+marlin/
+
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# Build artifacts
+*.bin
+*.hex
+*.elf
+*.uf2
+
+# Temporary files
+*.tmp
+*.log
+/tmp/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
