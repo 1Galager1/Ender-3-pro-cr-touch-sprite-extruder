@@ -75,7 +75,7 @@ When you see a **blue screen** and nothing happens:
 - ✅ Filename MUST be: `firmware.bin` (all lowercase)
 - ✅ File must be in the ROOT of the SD card (NOT in a folder)
 - ✅ It must be the ONLY .bin file on the card
-- ✅ The file should be 60-120 KB for STM32F103 boards (V4.2.2/V4.2.7). If it's much smaller (under 50KB) or suspiciously large (over 200KB), it might be wrong
+- ✅ The file should be 60-120 KB for STM32F103 boards (V4.2.2/V4.2.7). If it's much smaller (under 50KB) or much larger (over 150KB), it might be wrong
 
 **Common mistakes:**
 - ❌ `Firmware.bin` (capital F - won't work on some printers)
