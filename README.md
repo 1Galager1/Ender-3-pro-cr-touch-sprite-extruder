@@ -2,6 +2,17 @@
 
 Custom Marlin firmware configuration and build system for the **Ender 3 Pro** with **CR Touch** bed leveling sensor and **Sprite Extruder**.
 
+> **📌 Viewing from Pull Request #12?**
+> 
+> The new documentation files are in this PR but not yet merged to main. To access them:
+> - **Option 1:** Click the **"Files changed"** tab in the PR to browse all new files
+> - **Option 2:** Use these direct links to view files in this PR branch:
+>   - [QUICK_START_FIRMWARE_REVIEW.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/QUICK_START_FIRMWARE_REVIEW.md) ⭐ **Start here for firmware review**
+>   - [BIN_FILE_REVIEW_GUIDE.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/BIN_FILE_REVIEW_GUIDE.md)
+>   - [SIMPLE_GUIDE.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/SIMPLE_GUIDE.md)
+>   - [README_Version3.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/README_Version3.md)
+> - **After the PR is merged**, all the relative links below will work normally.
+
 ## 🚀 Quick Start
 
 Choose the guide that matches your situation:
