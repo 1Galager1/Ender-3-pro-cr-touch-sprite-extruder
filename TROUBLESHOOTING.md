@@ -75,7 +75,7 @@ When you see a **blue screen** and nothing happens:
 - ✅ Filename MUST be: `firmware.bin` (all lowercase)
 - ✅ File must be in the ROOT of the SD card (NOT in a folder)
 - ✅ It must be the ONLY .bin file on the card
-- ✅ The file should be 200-300 KB (if it's much smaller or larger, it might be wrong)
+- ✅ The file should be 60-120 KB for STM32F103 boards (V4.2.2/V4.2.7). If it's much smaller (under 50KB) or suspiciously large (over 200KB), it might be wrong
 
 **Common mistakes:**
 - ❌ `Firmware.bin` (capital F - won't work on some printers)
@@ -130,6 +130,14 @@ Some Ender 3 Pro boards are picky about filenames. Try these in order:
 1. **Try**: `firmware.bin` (lowercase - try this first)
 2. **Try**: `FIRMWARE.CUR` (all caps with .CUR extension)
 3. **Try**: `firmware.bin` but check that your SD card doesn't already have a `FIRMWARE.CUR` file on it from a previous flash (delete it if it does)
+
+⚠️ **IMPORTANT - Do NOT rename to firmware1.bin or similar!**
+- The bootloader ONLY recognizes specific filenames: `firmware.bin` or `FIRMWARE.CUR`
+- Names like `firmware1.bin`, `firmware2.bin`, `fw.bin`, etc. will NOT work
+- If your first flash attempt failed, you must:
+  1. Delete the old `firmware.bin` from the SD card
+  2. Copy a fresh `firmware.bin` file (same name) to try again
+  3. The bootloader looks for the exact filename, not a numbered version
 
 ### Option B: Verify Your Board Version
 
@@ -207,6 +215,14 @@ Before flashing firmware, verify:
 
 ### Q: My SD card slot is broken - can I still update?
 **A**: Yes! Use the USB flashing method (Option D above) or get an SD card extender/adapter.
+
+### Q: If the flash failed, should I rename the file to firmware1.bin for the next try?
+**A**: **NO!** The bootloader only recognizes `firmware.bin` or `FIRMWARE.CUR` - it will ignore files named firmware1.bin, firmware2.bin, etc. If your flash attempt failed:
+1. Delete the old firmware.bin from the SD card
+2. Copy a fresh firmware.bin file (same exact name)
+3. Try flashing again with the same filename
+
+The bootloader doesn't track previous attempts - it just looks for the specific filename each time you boot.
 
 ### Q: I'm still stuck. What should I do?
 **A**: Create a GitHub Issue in this repository with:

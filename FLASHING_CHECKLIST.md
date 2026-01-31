@@ -17,7 +17,7 @@ Use this checklist BEFORE you flash firmware to avoid common problems.
 - [ ] Renamed the file to exactly **`firmware.bin`** (all lowercase)
 - [ ] Verified there's no double extension like `firmware.bin.bin`
   - Windows Tip: In File Explorer → View tab → Check "File name extensions"
-- [ ] File size is reasonable (200-300 KB is normal)
+- [ ] File size is reasonable (60-120 KB is normal for STM32F103 boards)
 
 ### Copying to SD Card
 - [ ] Copied `firmware.bin` to the **ROOT** of the SD card (not in a folder)
