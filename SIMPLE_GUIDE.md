@@ -1,3 +1,18 @@
+# 🆘 PRINTER NOT BOOTING? BLUE SCREEN? READ THIS FIRST!
+
+## ⚠️ GOT A BLUE SCREEN OR BOOT ISSUE?
+
+**👉 [CLICK HERE FOR IMMEDIATE HELP - TROUBLESHOOTING GUIDE](TROUBLESHOOTING.md) 👈**
+
+Your printer is almost certainly NOT ruined! The blue screen usually means the firmware didn't flash. See the [TROUBLESHOOTING.md](TROUBLESHOOTING.md) guide for step-by-step recovery instructions.
+
+**Quick fixes that work 90% of the time:**
+1. Try a different SD card (8GB or smaller, formatted as FAT32)
+2. Make absolutely sure the file is named `firmware.bin` (lowercase)
+3. Wait up to 2 minutes - some printers are slow to flash
+
+---
+
 # ✅ GOOD NEWS: Pull Request #4 Was Already Successfully Merged!
 
 ## What Happened?
@@ -98,25 +113,59 @@ Once you see the green checkmark:
 
 ### Step 3: Flash the Firmware to Your Printer 🖨️
 
-1. **Copy the .bin file to an SD card**
-   - Use a blank or freshly formatted SD card (8GB or less works best)
-   - Copy the `.bin` file to the root of the SD card (not in any folders)
-   - Some people rename it to `firmware.bin` for good measure
+⚠️ **CRITICAL REQUIREMENTS - READ BEFORE FLASHING:**
 
-2. **Insert the SD card into your printer**
+**SD Card Requirements:**
+- ✅ Must be **8GB or SMALLER** (larger cards often don't work)
+- ✅ Must be formatted as **FAT32** (NOT exFAT or NTFS)
+- ✅ Must be empty or freshly formatted
+- ✅ The .bin file MUST be in the ROOT of the card (not in a folder)
+
+**File Naming Requirements:**
+- ✅ The file MUST be named exactly **`firmware.bin`** (all lowercase)
+- ✅ Make sure there's no double extension like `firmware.bin.bin`
+- ✅ Windows hides file extensions by default - enable "File name extensions" in View menu
+- ✅ It must be the ONLY .bin file on the SD card
+
+**Common Mistakes That Cause Blue Screen:**
+- ❌ Copying the .zip file instead of extracting it first
+- ❌ Using a card larger than 8GB
+- ❌ Not formatting as FAT32
+- ❌ Wrong filename or double extension
+- ❌ Putting the file in a folder on the SD card
+
+👉 **If you get a blue screen or boot failure, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for recovery steps!**
+
+**Flashing Steps:**
+
+1. **Format your SD card as FAT32**
+   - Windows: Right-click card → Format → Choose FAT32 → Start
+   - Mac: Disk Utility → Erase → Format: MS-DOS (FAT) → Erase
+
+2. **Copy the .bin file to the SD card**
+   - Extract the .zip file you downloaded first!
+   - Rename the .bin file to exactly `firmware.bin` (lowercase)
+   - Copy it to the root of the SD card (not in any folders)
+   - Safely eject the SD card from your computer
+
+3. **Insert the SD card into your printer**
    - Turn off your printer
    - Insert the SD card into your printer's SD card slot
    - Turn on your printer
 
-3. **Wait for the flash to complete**
-   - The screen will go blank or show a progress bar
+4. **Wait for the flash to complete**
+   - The screen might go blank or blue for 5-10 seconds - **this is normal!**
+   - You might see a progress bar or the screen might flash
    - This usually takes 10-30 seconds
-   - When done, the printer will reboot and show its normal screen
+   - **Wait at least 60-90 seconds** before assuming something is wrong
+   - When done, the printer will reboot and show the Marlin boot screen
+   - ⚠️ **If you see a blue screen for more than 2 minutes**, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
-4. **Remove the SD card**
+5. **Remove the SD card**
    - Turn off the printer
    - Remove the SD card
    - Turn the printer back on
+   - Verify the printer boots normally
 
 **Congratulations! Your printer now has the fixed firmware!** 🎉
 
