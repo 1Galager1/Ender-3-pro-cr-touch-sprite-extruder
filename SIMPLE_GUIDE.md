@@ -35,7 +35,9 @@ The code is fixed, but you need to build it into a firmware file that your print
 3. **Run the workflow**
    - You'll see a blue button that says **"Run workflow"** on the right side
    - Click that button
-   - A small dropdown menu will appear
+   - A small dropdown menu will appear with two options:
+     - **"Use workflow from"** - Make sure this is set to **"Branch: main"** (this is usually the default)
+     - If it shows a different branch (like "copilot/create-basic-bin-file"), click the dropdown and select **main**
    - Click the green **"Run workflow"** button in the dropdown
 
 4. **Wait for it to finish**
@@ -95,6 +97,9 @@ The fix was to remove that setting from the advanced configuration file. Don't w
 
 **Q: Do I need to merge PR #4 again?**
 **A:** No! It's already merged. You're all set on that part.
+
+**Q: Which branch should I select when running the workflow?**
+**A:** Always select **"main"**. This is the main branch where all the fixed code lives after PR #4 was merged. The other branches (like "copilot/create-basic-bin-file") are experimental/work-in-progress branches - don't use those for building your firmware.
 
 **Q: What if the build fails with a red X?**
 **A:** Ask for help by creating a new issue or comment, and provide the error message if you can find it.
