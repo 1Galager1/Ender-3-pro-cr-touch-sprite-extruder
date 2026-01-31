@@ -14,6 +14,39 @@ If you look at your repository's main page on GitHub, you'll see:
 
 Both of these files came from PR #4, which proves the merge worked! ✅
 
+## 📌 FIRST: How to Merge THIS Pull Request (PR #8)
+
+Before you build your firmware, you need to merge this current Pull Request to get these updated instructions into your repository.
+
+**Here's exactly how to merge a Pull Request on GitHub:**
+
+1. **Find the Pull Request**
+   - You should already be looking at Pull Request #8 (the one that contains these instructions)
+   - If not, go to your repository on GitHub: https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder
+   - Click the **"Pull requests"** tab at the top
+   - Click on the PR titled something like "Fix merge issue with PR #4" or "Clarify branch selection"
+
+2. **Review the Changes (Optional)**
+   - Scroll down and you'll see the changes I made (updating SIMPLE_GUIDE.md)
+   - You can click "Files changed" tab to see exactly what was modified
+   - Don't worry if this is confusing - you can skip this step
+
+3. **Merge the Pull Request**
+   - Scroll to the bottom of the Pull Request page
+   - You'll see a section with a green button that says **"Merge pull request"**
+   - Click that green **"Merge pull request"** button
+   - A text box will appear - you can leave it as is
+   - Click the green **"Confirm merge"** button
+   - Done! The PR is now merged! 🎉
+
+4. **After Merging**
+   - You'll see a message saying "Pull request successfully merged and closed"
+   - You can click **"Delete branch"** button if it appears (this is optional and just cleans up)
+   - Now the updated SIMPLE_GUIDE.md is in your main branch!
+
+**Why do you need to merge PRs?**
+Think of a Pull Request like a suggestion box. I created a suggestion to update your guide, but it's not officially part of your project until you approve it by clicking "Merge pull request". Once merged, the changes become part of your main code.
+
 ## What Do You Do Next? (Step-by-Step)
 
 Now that the code is fixed, here's what you need to do to get firmware for your 3D printer:
@@ -97,6 +130,9 @@ The fix was to remove that setting from the advanced configuration file. Don't w
 
 **Q: Do I need to merge PR #4 again?**
 **A:** No! It's already merged. You're all set on that part.
+
+**Q: How do I merge a Pull Request?**
+**A:** See the section at the top called "📌 FIRST: How to Merge THIS Pull Request (PR #8)" - it has detailed step-by-step instructions with screenshots descriptions. The short version: scroll to the bottom of the PR page, click the green "Merge pull request" button, then click "Confirm merge".
 
 **Q: Which branch should I select when running the workflow?**
 **A:** Always select **"main"**. This is the main branch where all the fixed code lives after PR #4 was merged. The other branches (like "copilot/create-basic-bin-file") are experimental/work-in-progress branches - don't use those for building your firmware.
