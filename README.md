@@ -2,6 +2,7 @@
 
 Custom Marlin firmware configuration and build system for the **Ender 3 Pro** with **CR Touch** bed leveling sensor and **Sprite Extruder**.
 
+<!-- TODO: Remove this notice after PR #12 is merged -->
 > **📌 Viewing from Pull Request #12?**
 > 
 > The new documentation files are in this PR but not yet merged to main. To access them:

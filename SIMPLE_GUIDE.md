@@ -159,6 +159,7 @@ If you already have a firmware bin file that successfully boots your printer and
 
 **Follow these steps:**
 
+<!-- TODO: After PR #12 merge, change these back to relative links -->
 1. **Quick Start:** See [QUICK_START_FIRMWARE_REVIEW.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/QUICK_START_FIRMWARE_REVIEW.md) for a simple guide
 2. **Detailed Guide:** See [BIN_FILE_REVIEW_GUIDE.md](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/blob/copilot/review-printer-bin-file/BIN_FILE_REVIEW_GUIDE.md) for complete instructions
 3. **Upload Location:** Place your bin file in the `firmware-bins/working/` directory
