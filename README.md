@@ -7,6 +7,10 @@ This repository contains pre-configured Marlin firmware for:
 - **Extruder:** Sprite Pro (E-steps: 424.9)
 - **Display:** 12864 LCD with knob/encoder
 
+## 🚀 Want the Bin File Right Now?
+
+**See [QUICK_START.md](QUICK_START.md)** - Get your firmware in 3 easy steps!
+
 ## 🎯 Quick Start - Get Your Firmware Bin File
 
 ### Option 1: Build Firmware Using GitHub Actions (Recommended)
