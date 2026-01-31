@@ -65,7 +65,7 @@ This repository contains:
 - ✅ Bed leveling fade height support
 
 ### Configuration Notes
-- **Motherboard**: BOARD_CREALITY_V422 (V4.2.2/V4.2.7)
+- **Motherboard**: BOARD_CREALITY_V422 (compatible with both V4.2.2 and V4.2.7 boards)
 - **Marlin Version**: bugfix-2.1.x branch (latest stable)
 - **Build Environment**: STM32F103RE_creality
 - **Probe Offset**: Placeholder values - **MUST calibrate** after flashing

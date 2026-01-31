@@ -92,7 +92,7 @@ When you see a **blue screen** and nothing happens:
 ### Step 4: Verify You Downloaded the Correct File
 
 **Where to get the firmware:**
-1. Go to your GitHub repository: `https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder`
+1. Go to this GitHub repository (the one you're viewing this document in)
 2. Click "Actions" tab
 3. Click on the most recent successful build (green checkmark ✅)
 4. Scroll down to "Artifacts"
@@ -141,8 +141,8 @@ Some Ender 3 Pro boards are picky about filenames. Try these in order:
 3. If it says something different (like V4.3.1 or V1.1.5), **STOP** - you need different firmware
 
 **If you have a different board:**
-- V4.3.1 or newer: Uses STM32F1 or GD32 chip (different build environment needed)
-- V1.1.x: Much older board (different firmware entirely)
+- V4.3.1 or newer: Uses STM32G0 or GD32F303 chip (different build environment needed)
+- V1.1.x: Much older board (ATmega-based, completely different firmware)
 
 ### Option C: Download Pre-Built Firmware from Creality
 

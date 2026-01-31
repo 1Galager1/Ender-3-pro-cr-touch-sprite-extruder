@@ -122,9 +122,9 @@ Once you see the green checkmark:
 - ✅ The .bin file MUST be in the ROOT of the card (not in a folder)
 
 **File Naming Requirements:**
+- ✅ Windows hides file extensions by default - enable "File name extensions" in File Explorer's View menu first
 - ✅ The file MUST be named exactly **`firmware.bin`** (all lowercase)
 - ✅ Make sure there's no double extension like `firmware.bin.bin`
-- ✅ Windows hides file extensions by default - enable "File name extensions" in View menu
 - ✅ It must be the ONLY .bin file on the SD card
 
 **Common Mistakes That Cause Blue Screen:**
