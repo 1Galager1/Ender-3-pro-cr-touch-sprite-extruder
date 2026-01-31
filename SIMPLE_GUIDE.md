@@ -2,6 +2,18 @@
 
 **Someone has already built the firmware for your exact configuration, and it's ready to download!**
 
+## ⚠️ WAIT! Important Warning First!
+
+**BEFORE you flash firmware, check one thing:**
+
+Your V4.2.2 motherboard might have a **GD32** chip instead of **STM32** chip. If you have a GD32 chip, this firmware will NOT work and will cause a blue screen!
+
+**👉 [Read TROUBLESHOOTING.md to check your chip type first!](TROUBLESHOOTING.md)**
+
+If you already flashed and got a blue screen, **don't panic** - your board is fine, you just need the right firmware. See the troubleshooting guide.
+
+---
+
 ## 📥 How to Get Pre-Built Firmware (Easiest Method)
 
 **You don't need to build anything yourself!** Here's how to download the ready-to-use firmware:
@@ -17,15 +29,18 @@
 5. **Extract the .zip** - inside you'll find `firmware.bin`
 
 6. **Flash to your printer:**
-   - Copy `firmware.bin` to a blank FAT32 SD card (root directory, not in a folder)
+   - Copy `firmware.bin` to a blank FAT32 SD card (8GB or smaller, root directory, not in a folder)
+   - **IMPORTANT:** If you've tried flashing before, **rename the file** to something unique (e.g., `firmware1.bin`) - the printer won't reflash the same filename twice!
    - Turn off your printer
    - Insert SD card
    - Turn on printer
-   - Wait 10-30 seconds (screen may go blank - this is normal!)
+   - **Wait at least 60 seconds** (screen may go blank - this is normal!)
    - Printer will reboot with new firmware
-   - Remove SD card
+   - Remove SD card and reboot again
 
-**That's it!** You now have the firmware running on your printer.
+**🆘 Got a blue screen or printer won't boot?** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - this is usually a chip mismatch (GD32 vs STM32) or SD card issue!
+
+**That's it!** If it booted successfully, you now have the firmware running on your printer.
 
 For post-installation setup (bed leveling, Z-offset, etc.), see the [main README](README.md#️-post-flash-setup-important).
 

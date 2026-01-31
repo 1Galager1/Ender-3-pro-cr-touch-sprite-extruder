@@ -2,13 +2,41 @@
 
 **✅ YES! Pre-built firmware (.bin files) are available for download!**
 
+## ⚠️ CRITICAL WARNING: Check Your Board Chip FIRST!
+
+**BEFORE downloading firmware, you MUST verify your motherboard chip type!**
+
+V4.2.2 boards come with **TWO different chips**:
+- **STM32F103** ← This firmware works ONLY with this chip
+- **GD32F303** ← This firmware will NOT work and causes blue screen!
+
+**👉 [Read TROUBLESHOOTING.md](TROUBLESHOOTING.md) to identify your chip and get the right firmware!**
+
+If you flash the wrong firmware, your printer will show a **blue screen and won't boot**. This is NOT permanent damage - you just need the correct firmware for your chip.
+
+---
+
 This repository provides ready-to-use firmware for the **Ender 3 Pro** with:
-- **Motherboard:** Creality V4.2.2 (STM32F103)
+- **Motherboard:** Creality V4.2.2 with **STM32F103 chip only**
 - **Probe:** CR Touch (BLTouch compatible)
 - **Extruder:** Sprite Extruder Direct Drive
 - **Display:** Stock 12864 LCD (knob-based, non-touch)
 - **Auto Bed Leveling:** Enabled with 3x3 bilinear grid
 - **E-steps:** Pre-configured for Sprite (424.9)
+
+## 🆘 Firmware Not Working? Blue Screen?
+
+**If your printer shows a blue screen or won't boot after flashing:**
+
+👉 **[READ THE TROUBLESHOOTING GUIDE](TROUBLESHOOTING.md)** 👈
+
+Common issues:
+- ❌ Wrong chip type (GD32 vs STM32) - **MOST COMMON!**
+- ❌ Same filename used twice (printer won't reflash same name)
+- ❌ SD card compatibility issues
+- ❌ Not waiting long enough during flash
+
+**Alternative firmware repositories** with the same configuration are also listed in the troubleshooting guide!
 
 ## 🎯 Quick Start: Download Pre-Built Firmware
 
@@ -32,13 +60,16 @@ This repository provides ready-to-use firmware for the **Ender 3 Pro** with:
    - Inside you'll find **firmware.bin** - this is your pre-compiled firmware!
 
 4. **Flash to your printer:**
-   - Copy `firmware.bin` to a blank FAT32-formatted microSD card (root directory)
+   - Copy `firmware.bin` to a blank FAT32-formatted microSD card (8GB or smaller, root directory)
+   - **IMPORTANT:** If you've flashed before, **rename the file** to something unique (e.g., `firmware1.bin`, `firmware_jan31.bin`) - the printer won't reflash the same filename!
    - Power off your printer
    - Insert the SD card into the printer
    - Power on the printer
-   - Wait 10-30 seconds while it flashes (screen may go blank)
+   - **Wait at least 60 seconds** while it flashes (screen may go blank - this is NORMAL)
    - When complete, the printer will reboot with the new firmware
-   - Remove the SD card
+   - Remove the SD card and reboot again
+
+**⚠️ If you get a blue screen or printer won't boot:** See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 
 **Download Link:** [Latest Firmware Artifacts](https://github.com/1Galager1/Ender-3-pro-cr-touch-sprite-extruder/actions/workflows/build.yml)
 
