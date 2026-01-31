@@ -1,0 +1,44 @@
+# Firmware build artifacts (only commit intentionally reviewed bins)
+*.bin
+*.hex
+*.elf
+
+# Exception: Allow bin files in firmware-bins directory
+!firmware-bins/**/*.bin
+
+# Temporary files
+*.tmp
+*.bak
+*~
+.DS_Store
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build directories
+.pio/
+.pioenvs/
+.piolibdeps/
+build/
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# Node
+node_modules/
+npm-debug.log
+
+# Logs
+*.log
+
+# OS generated files
+Thumbs.db
