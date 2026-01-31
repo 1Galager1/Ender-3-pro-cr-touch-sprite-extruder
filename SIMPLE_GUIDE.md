@@ -132,7 +132,7 @@ The fix was to remove that setting from the advanced configuration file. Don't w
 **A:** No! It's already merged. You're all set on that part.
 
 **Q: How do I merge a Pull Request?**
-**A:** See the section at the top called "📌 FIRST: How to Merge THIS Pull Request (PR #8)" - it has detailed step-by-step instructions with screenshots descriptions. The short version: scroll to the bottom of the PR page, click the green "Merge pull request" button, then click "Confirm merge".
+**A:** See the section at the top called "📌 FIRST: How to Merge THIS Pull Request (PR #8)" - it has detailed step-by-step instructions. The short version: scroll to the bottom of the PR page, click the green "Merge pull request" button, then click "Confirm merge".
 
 **Q: Which branch should I select when running the workflow?**
 **A:** Always select **"main"**. This is the main branch where all the fixed code lives after PR #4 was merged. The other branches (like "copilot/create-basic-bin-file") are experimental/work-in-progress branches - don't use those for building your firmware.
