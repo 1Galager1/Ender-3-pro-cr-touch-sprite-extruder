@@ -77,9 +77,15 @@ jobs:
           else:
               text = text + f"\n#define DEFAULT_AXIS_STEPS_PER_UNIT   {steps_value}\n"
 
-          # 3) Ensure knob 12864 controller macro exists
+          # 3) Ensure knob 12864 controller macro exists and disable touchscreen options
           if "REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER" not in text:
               text += "\n#define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER\n"
+          
+          # Disable any touchscreen UI options that might conflict (comment them out if present)
+          touch_ui_options = ['TOUCH_UI_FTDI_EVE', 'TOUCH_UI', 'CR10_STOCKDISPLAY', 'ENDER2_STOCKDISPLAY']
+          for option in touch_ui_options:
+              # Comment out if it's active (not already commented)
+              text = re.sub(r'^\s*#\s*define\s+' + re.escape(option), f'//#define {option}  // Disabled for knob LCD', text, flags=re.MULTILINE)
 
           # 4) Ensure BLTOUCH and Z_SAFE_HOMING
           if "BLTOUCH" not in text:
@@ -131,6 +137,49 @@ jobs:
 
           cfg_path.write_text(text, encoding="utf-8")
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
+          PY
+
+      - name: Apply patches to Marlin/Configuration_adv.h (inline Python)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          cfg_adv_path = Path("marlin/Marlin/Configuration_adv.h")
+          if not cfg_adv_path.exists():
+              print("ERROR: marlin/Marlin/Configuration_adv.h not found")
+              sys.exit(1)
+
+          text = cfg_adv_path.read_text(encoding="utf-8")
+
+          def ensure_define(t, name, value=None):
+              pat = re.compile(r'^\s*(//\s*)?#\s*define\s+' + re.escape(name) + r'(?:\s+.*)?$', re.MULTILINE)
+              if value is None:
+                  # Just enable the define (no value)
+                  if pat.search(t):
+                      # Replace any existing (commented or not) with active version
+                      t = pat.sub(f'#define {name}', t)
+                  else:
+                      t = t + f"\n#define {name}\n"
+              else:
+                  # Enable with a specific value
+                  if pat.search(t):
+                      t = pat.sub(f'#define {name} {value}', t)
+                  else:
+                      t = t + f"\n#define {name} {value}\n"
+              return t
+
+          # 1) Restore leveling after G28 (auto-restore saved mesh)
+          text = ensure_define(text, 'RESTORE_LEVELING_AFTER_G28')
+
+          # 2) Enable leveling fade height for smoother transitions
+          text = ensure_define(text, 'ENABLE_LEVELING_FADE_HEIGHT')
+
+          # 3) BLTouch delay for CR-Touch stability
+          text = ensure_define(text, 'BLTOUCH_DELAY', '500')
+
+          cfg_adv_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration_adv.h with user settings.')
           PY
 
       - name: Build Marlin with PlatformIO
