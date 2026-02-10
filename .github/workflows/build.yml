@@ -109,11 +109,18 @@ jobs:
           if "EEPROM_SETTINGS" not in text:
               text += "\n#define EEPROM_SETTINGS\n"
 
-          # 9) Default filament diameter
+          # 9) SD Card support
+          if re.search(r'^\s*#\s*define\s+SDSUPPORT', text, re.MULTILINE):
+              # Already defined, ensure it's not commented
+              text = re.sub(r'^\s*//\s*#\s*define\s+SDSUPPORT', '#define SDSUPPORT', text, flags=re.MULTILINE)
+          else:
+              text += "\n#define SDSUPPORT\n"
+
+          # 10) Default filament diameter
           if "DEFAULT_NOMINAL_FILAMENT_DIA" not in text:
               text += "\n#define DEFAULT_NOMINAL_FILAMENT_DIA 1.75\n"
 
-                    # 10) Ensure FAN_SOFT_PWM is enabled (force uncomment/add)
+          # 11) Ensure FAN_SOFT_PWM is enabled (force uncomment/add)
           fan_pat = re.compile(r'^\s*//?\s*#\s*define\s+FAN_SOFT_PWM', re.MULTILINE)
           if fan_pat.search(text):
               # If it exists (commented or not), replace it with active version
@@ -122,7 +129,7 @@ jobs:
               # If it doesn't exist at all, add it
               text += "\n#define FAN_SOFT_PWM\n"
 
-          # 11) Ensure SERIAL_PORT is set to a valid number 1..9 (set to 1 if missing/invalid)
+          # 12) Ensure SERIAL_PORT is set to a valid number 1..9 (set to 1 if missing/invalid)
           ser_match = re.search(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', text, re.MULTILINE)
           if ser_match:
               text = re.sub(r'^\s*#\s*define\s+SERIAL_PORT\s+(-?\d+)', '#define SERIAL_PORT 1', text, flags=re.MULTILINE)
@@ -131,6 +138,53 @@ jobs:
 
           cfg_path.write_text(text, encoding="utf-8")
           print('Patched marlin/Marlin/Configuration.h with user settings (safe-mode).')
+          PY
+
+      - name: Apply safe patches to Marlin/Configuration_adv.h (inline Python)
+        run: |
+          python3 - <<'PY'
+          import re, sys
+          from pathlib import Path
+
+          cfg_adv_path = Path("marlin/Marlin/Configuration_adv.h")
+          if not cfg_adv_path.exists():
+              print("ERROR: marlin/Marlin/Configuration_adv.h not found")
+              sys.exit(1)
+
+          text = cfg_adv_path.read_text(encoding="utf-8")
+
+          # Helper function to check if a define is active (not commented)
+          def is_defined(text, name):
+              return bool(re.search(r'^\s*#\s*define\s+' + re.escape(name), text, re.MULTILINE))
+
+          # Ensure BOOTSCREEN_TIMEOUT is set
+          if not is_defined(text, "BOOTSCREEN_TIMEOUT"):
+              text += "\n#define BOOTSCREEN_TIMEOUT 3000\n"
+
+          # Ensure ENCODER settings for knob display
+          if not is_defined(text, "ENCODER_PULSES_PER_STEP"):
+              text += "\n#define ENCODER_PULSES_PER_STEP 4\n"
+          if not is_defined(text, "ENCODER_STEPS_PER_MENU_ITEM"):
+              text += "\n#define ENCODER_STEPS_PER_MENU_ITEM 1\n"
+
+          # Ensure RESTORE_LEVELING_AFTER_G28
+          if not is_defined(text, "RESTORE_LEVELING_AFTER_G28"):
+              text += "\n#define RESTORE_LEVELING_AFTER_G28\n"
+
+          # Ensure BLTOUCH_DELAY is set (only if BLTOUCH section doesn't already exist)
+          if "BLTOUCH_DELAY" not in text:
+              text += "\n#ifdef BLTOUCH\n  #define BLTOUCH_DELAY 500\n#endif\n"
+
+          # Ensure EEPROM_AUTO_INIT is enabled
+          if not is_defined(text, "EEPROM_AUTO_INIT"):
+              text += "\n#define EEPROM_AUTO_INIT\n"
+
+          # Add startup beep command
+          if not is_defined(text, "STARTUP_COMMANDS"):
+              text += '\n#define STARTUP_COMMANDS "M300 S440 P200"\n'
+
+          cfg_adv_path.write_text(text, encoding="utf-8")
+          print('Patched marlin/Marlin/Configuration_adv.h with essential settings.')
           PY
 
       - name: Build Marlin with PlatformIO

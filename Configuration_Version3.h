@@ -8,6 +8,11 @@
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
 
+// ----------------- SERIAL COMMUNICATION -----------------
+// Serial port for communication (1 for USB on Creality V4.2.2)
+#define SERIAL_PORT 1
+#define BAUDRATE 115200
+
 // ----------------- MACHINE STEPS -----------------
 // X, Y, Z, E. E set to Sprite factory value you supplied.
 #define DEFAULT_AXIS_STEPS_PER_UNIT   { 80, 80, 400, 424.9 } // X, Y, Z, E
@@ -40,6 +45,9 @@
 
 // ----------------- EEPROM -----------------
 #define EEPROM_SETTINGS        // Enable M500/M501 save/restore
+
+// ----------------- SD CARD -----------------
+#define SDSUPPORT              // Enable SD card support
 
 // ----------------- THERMISTOR -----------------
 // Stock Creality thermistor (NTC 100k) — keep Marlin defaults for a Creality thermistor in your chosen Marlin release.
